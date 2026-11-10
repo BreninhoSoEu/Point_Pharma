@@ -261,6 +261,109 @@ namespace Point_Pharma.Data.Migrations
                     b.ToTable("Farmacias");
                 });
 
+            modelBuilder.Entity("Point_Pharma.Models.ItemPedido", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FarmaciaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NomeFarmacia")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NomeProduto")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecoUnitario")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int?>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedidoId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.ToTable("ItensPedido");
+                });
+
+            modelBuilder.Entity("Point_Pharma.Models.Pedido", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CodigoPedido")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DataPedido")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FormaPagamento")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasColumnType("decimal(16,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CodigoPedido")
+                        .IsUnique();
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Pedidos");
+                });
+
+            modelBuilder.Entity("Point_Pharma.Models.PerfilUsuario", b =>
+                {
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateOnly>("DataNascimento")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("UsuarioId");
+
+                    b.ToTable("PerfisUsuarios");
+                });
+
             modelBuilder.Entity("Point_Pharma.Models.Produto", b =>
                 {
                     b.Property<int>("Id")
@@ -354,6 +457,45 @@ namespace Point_Pharma.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Point_Pharma.Models.ItemPedido", b =>
+                {
+                    b.HasOne("Point_Pharma.Models.Pedido", "Pedido")
+                        .WithMany("Itens")
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Point_Pharma.Models.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Pedido");
+
+                    b.Navigation("Produto");
+                });
+
+            modelBuilder.Entity("Point_Pharma.Models.Pedido", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Point_Pharma.Models.PerfilUsuario", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Usuario")
+                        .WithOne()
+                        .HasForeignKey("Point_Pharma.Models.PerfilUsuario", "UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("Point_Pharma.Models.Produto", b =>
                 {
                     b.HasOne("Point_Pharma.Models.Farmacias", "Farmacia")
@@ -363,6 +505,11 @@ namespace Point_Pharma.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Farmacia");
+                });
+
+            modelBuilder.Entity("Point_Pharma.Models.Pedido", b =>
+                {
+                    b.Navigation("Itens");
                 });
 #pragma warning restore 612, 618
         }
