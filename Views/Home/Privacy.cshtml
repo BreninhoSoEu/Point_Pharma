@@ -1,6 +1,201 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Privacidade e dados Point_Pharma";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<style>
+    .privacy-page {
+        --privacy-ink: #16313a;
+        --privacy-muted: #61747a;
+        --privacy-teal: #087f8c;
+        color: var(--privacy-ink);
+        padding-bottom: 2rem;
+    }
+
+    .privacy-hero {
+        padding: clamp(1.5rem, 4vw, 2.75rem);
+        border: 1px solid #d9ebed;
+        border-radius: 1.5rem;
+        background: linear-gradient(125deg, #edf9f8, #f8fbfb 68%, #e7f4f4);
+    }
+
+    .privacy-mark {
+        display: grid;
+        width: 3.25rem;
+        height: 3.25rem;
+        place-items: center;
+        border-radius: 1rem;
+        background: #fff;
+        color: var(--privacy-teal);
+        box-shadow: 0 .5rem 1.5rem rgba(22, 49, 58, .08);
+    }
+
+    .privacy-eyebrow {
+        color: #16845b;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+
+    .privacy-title {
+        color: var(--privacy-ink);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 750;
+        letter-spacing: -.04em;
+    }
+
+    .privacy-lead { max-width: 51rem; color: var(--privacy-muted); font-size: 1.02rem; line-height: 1.75; }
+
+    .privacy-scope {
+        display: flex;
+        align-items: flex-start;
+        gap: .8rem;
+        padding: 1rem 1.1rem;
+        border: 1px solid #dbe9eb;
+        border-radius: .95rem;
+        background: #fff;
+        color: var(--privacy-muted);
+        font-size: .86rem;
+        line-height: 1.6;
+    }
+
+    .privacy-scope svg { flex: 0 0 auto; margin-top: .1rem; color: var(--privacy-teal); }
+    .privacy-section-title { color: var(--privacy-ink); font-weight: 700; letter-spacing: -.025em; }
+    .privacy-intro { max-width: 48rem; color: var(--privacy-muted); line-height: 1.7; }
+
+    .privacy-card {
+        height: 100%;
+        padding: 1.3rem;
+        border: 1px solid #e2ebed;
+        border-radius: 1.05rem;
+        background: #fff;
+        box-shadow: 0 .4rem 1.3rem rgba(22, 49, 58, .04);
+    }
+
+    .privacy-card-icon {
+        display: grid;
+        width: 2.7rem;
+        height: 2.7rem;
+        margin-bottom: 1rem;
+        place-items: center;
+        border-radius: .85rem;
+        background: #eaf6f6;
+        color: var(--privacy-teal);
+    }
+
+    .privacy-card h3 { color: var(--privacy-ink); font-size: 1rem; font-weight: 700; }
+    .privacy-card p, .privacy-card li { color: var(--privacy-muted); font-size: .88rem; line-height: 1.68; }
+    .privacy-card ul { margin-bottom: 0; padding-left: 1.1rem; }
+
+    .privacy-detail {
+        padding: 1.35rem;
+        border: 1px solid #dce9eb;
+        border-radius: 1.1rem;
+        background: #f8fbfb;
+    }
+
+    .privacy-detail h3 { color: var(--privacy-ink); font-size: 1rem; font-weight: 700; }
+    .privacy-detail p { margin-bottom: 0; color: var(--privacy-muted); font-size: .88rem; line-height: 1.7; }
+
+    .privacy-development-note {
+        padding: 1.15rem 1.25rem;
+        border: 1px solid #f0dfb9;
+        border-radius: .95rem;
+        background: #fff9ec;
+        color: #705b2d;
+        font-size: .84rem;
+        line-height: 1.65;
+    }
+
+    .privacy-link { color: var(--privacy-teal); font-weight: 600; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .privacy-footnote { color: var(--privacy-muted); font-size: .78rem; line-height: 1.6; }
+</style>
+
+<main class="privacy-page">
+    <section class="privacy-hero mb-4">
+        <div class="privacy-mark mb-3">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div class="privacy-eyebrow mb-2">PointPharma · Banco Point_Pharma</div>
+        <h1 class="privacy-title mb-3">Privacidade com informação clara.</h1>
+        <p class="privacy-lead mb-0">
+            Esta página explica, em linguagem direta, quais dados a versão atual do sistema registra no banco, como eles apoiam o funcionamento da plataforma e quais limites ainda existem no protótipo.
+        </p>
+    </section>
+
+    <div class="privacy-scope mb-5">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v5m0-8h.01"/></svg>
+        <span><strong>Escopo:</strong> o banco relacional Point_Pharma é acessado pelo backend ASP.NET Core usando Entity Framework Core e SQL Server. Esta página descreve a implementação observada no projeto; não publica endereço de servidor, cadeia de conexão ou credenciais.</span>
+    </div>
+
+    <section class="mb-5">
+        <div class="privacy-eyebrow mb-2">Dados registrados</div>
+        <h2 class="privacy-section-title h2 mb-2">O que a base armazena</h2>
+        <p class="privacy-intro mb-4">As informações são separadas por finalidade e conectadas por relacionamentos entre contas, farmácias, produtos e pedidos.</p>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <article class="privacy-card">
+                    <span class="privacy-card-icon">
+                        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+                    </span>
+                    <h3>Conta e perfil</h3>
+                    <p>O Identity administra a conta e o e-mail de acesso. O perfil associado à conta contém nome e data de nascimento. A senha é processada pelo mecanismo de autenticação do ASP.NET Core Identity, que a armazena usando hash em vez de texto legível.</p>
+                </article>
+            </div>
+            <div class="col-md-6">
+                <article class="privacy-card">
+                    <span class="privacy-card-icon">
+                        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M8 9h.01M12 9h.01M16 9h.01"/></svg>
+                    </span>
+                    <h3>Farmácias e produtos</h3>
+                    <p>O catálogo registra dados das farmácias, como nome, endereço, contato e horário, além de produtos, categoria, descrição, preço, estoque e farmácia responsável.</p>
+                </article>
+            </div>
+            <div class="col-md-6">
+                <article class="privacy-card">
+                    <span class="privacy-card-icon">
+                        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 3h14v18l-2-1.5L15 21l-3-1.5L9 21l-2-1.5L5 21V3Z"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+                    </span>
+                    <h3>Pedidos e histórico</h3>
+                    <p>Um pedido registra código único, data, situação, forma de pagamento escolhida e total. Seus itens guardam produto, farmácia, quantidade, preço unitário e subtotal. O vínculo com uma conta é opcional.</p>
+                </article>
+            </div>
+            <div class="col-md-6">
+                <article class="privacy-card">
+                    <span class="privacy-card-icon">
+                        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6M7 16h4"/></svg>
+                    </span>
+                    <h3>Compras como visitante</h3>
+                    <p>O servidor gera um código aleatório para consultar o pedido. O aplicativo guarda esse código no aparelho e pode associar pedidos sem conta a uma conta quando a pessoa entrar.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="privacy-detail h-100">
+                <h3>Finalidade e consistência</h3>
+                <p>Os dados sustentam o catálogo, o controle de estoque e a consulta de pedidos. No checkout, o servidor verifica a quantidade disponível, recalcula os valores e grava pedido, itens e baixa de estoque na mesma transação. O código de cada pedido tem índice único; as relações entre tabelas são definidas no modelo do Entity Framework Core.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="privacy-detail h-100">
+                <h3>Pagamentos</h3>
+                <p>Nesta versão, o sistema registra a opção selecionada — Pix, cartão ou dinheiro na retirada — como informação do pedido. Não há integração com provedor de pagamento nem captura de número de cartão pelo checkout atual.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-4">
+        <div class="privacy-development-note">
+            <strong>Transparência sobre o estágio do projeto.</strong> O protótipo ainda não define prazo de retenção nem oferece exclusão de conta pela interface. Antes de disponibilizar o sistema publicamente, é necessário identificar o responsável pelo tratamento, informar um canal de contato para solicitações dos titulares e formalizar essas regras.
+        </div>
+    </section>
+
+    <p class="privacy-footnote mb-2">
+        Para conhecer os direitos previstos para titulares de dados pessoais, consulte a <a class="privacy-link" href="https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados/direito-dos-titulares" target="_blank" rel="noopener noreferrer">orientação oficial da ANPD</a>.
+    </p>
+    <p class="privacy-footnote mb-0">Descrição baseada nos modelos, relacionamentos e operações implementados no Point_Pharma. Ela não substitui uma política institucional revisada pelo responsável pelo serviço.</p>
+</main>

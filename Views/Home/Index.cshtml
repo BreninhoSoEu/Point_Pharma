@@ -1,8 +1,304 @@
-﻿@{
-    ViewData["Title"] = "Boa noite filinho";
+@{
+    ViewData["Title"] = "Banco de dados Point_Pharma";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Banco de dados</h1>
-    <p>Clica >> <a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROdV28-h7yDOQIe5lCLpvRRYdwleR45J1BWux3qdbpgMaxxdocMxhzVxY&s=10">Cade filhinho de babai?!?</a> << aqui do lado</p>
-</div>
+<style>
+    .database-page {
+        --db-ink: #16313a;
+        --db-muted: #61747a;
+        --db-teal: #087f8c;
+        --db-green: #16845b;
+        color: var(--db-ink);
+        padding-bottom: 2rem;
+    }
+
+    .database-hero {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #d9ebed;
+        border-radius: 1.5rem;
+        padding: clamp(1.5rem, 4vw, 3.25rem);
+        background: linear-gradient(125deg, #edf9f8 0%, #f7fbfb 58%, #e6f4f5 100%);
+    }
+
+    .database-hero::after {
+        position: absolute;
+        right: -5rem;
+        bottom: -8rem;
+        width: 21rem;
+        height: 21rem;
+        border: 1px solid rgba(8, 127, 140, .12);
+        border-radius: 50%;
+        content: "";
+        box-shadow: 0 0 0 2.5rem rgba(8, 127, 140, .035), 0 0 0 5rem rgba(8, 127, 140, .025);
+        pointer-events: none;
+    }
+
+    .database-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        margin-bottom: 1rem;
+        color: var(--db-green);
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+
+    .database-title {
+        max-width: 48rem;
+        color: var(--db-ink);
+        font-size: clamp(2rem, 4.5vw, 3.5rem);
+        font-weight: 750;
+        letter-spacing: -.045em;
+        line-height: 1.08;
+    }
+
+    .database-lead {
+        max-width: 45rem;
+        color: var(--db-muted);
+        font-size: 1.08rem;
+        line-height: 1.75;
+    }
+
+    .database-architecture {
+        position: relative;
+        z-index: 1;
+        padding: 1.35rem;
+        border: 1px solid rgba(255, 255, 255, .8);
+        border-radius: 1.25rem;
+        background: rgba(255, 255, 255, .86);
+        box-shadow: 0 1rem 3rem rgba(24, 75, 83, .09);
+        backdrop-filter: blur(8px);
+    }
+
+    .architecture-caption {
+        color: var(--db-muted);
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+    }
+
+    .architecture-step {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        padding: .85rem .75rem;
+        border: 1px solid #e6eff0;
+        border-radius: .9rem;
+        background: #fff;
+    }
+
+    .architecture-step + .architecture-step { margin-top: .55rem; }
+    .architecture-icon {
+        display: grid;
+        width: 2.6rem;
+        height: 2.6rem;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: .8rem;
+        background: #eaf6f6;
+        color: var(--db-teal);
+    }
+
+    .architecture-step strong { display: block; font-size: .9rem; }
+    .architecture-step small { color: var(--db-muted); font-size: .76rem; }
+    .architecture-arrow { height: 1rem; margin: .15rem 0 .15rem 1.9rem; color: #85a6aa; }
+
+    .database-section { padding-top: 3.5rem; }
+    .database-section-label {
+        color: var(--db-green);
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+
+    .database-section-title { color: var(--db-ink); font-weight: 700; letter-spacing: -.025em; }
+    .database-section-copy { max-width: 45rem; color: var(--db-muted); line-height: 1.7; }
+
+    .database-card {
+        height: 100%;
+        padding: 1.35rem;
+        border: 1px solid #e2ebed;
+        border-radius: 1.1rem;
+        background: #fff;
+        box-shadow: 0 .45rem 1.4rem rgba(22, 49, 58, .045);
+    }
+
+    .database-card-icon {
+        display: grid;
+        width: 2.8rem;
+        height: 2.8rem;
+        margin-bottom: 1rem;
+        place-items: center;
+        border-radius: .9rem;
+        background: #eaf6f6;
+        color: var(--db-teal);
+    }
+
+    .database-card h3 { color: var(--db-ink); font-size: 1.05rem; font-weight: 700; }
+    .database-card p, .database-card li { color: var(--db-muted); font-size: .9rem; line-height: 1.65; }
+    .database-card ul { margin-bottom: 0; padding-left: 1.15rem; }
+
+    .relationship-panel {
+        padding: clamp(1.25rem, 3vw, 2rem);
+        border: 1px solid #dce9eb;
+        border-radius: 1.25rem;
+        background: #f8fbfb;
+    }
+
+    .relationship-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem;
+        padding: .95rem 1rem;
+        border: 1px solid #e1ebed;
+        border-radius: .85rem;
+        background: #fff;
+    }
+
+    .relationship-item strong { font-size: .88rem; }
+    .relationship-cardinality { color: var(--db-teal); font-size: .75rem; font-weight: 700; white-space: nowrap; }
+
+    .transaction-callout {
+        padding: 1.5rem;
+        border-radius: 1.15rem;
+        background: #123c46;
+        color: #fff;
+    }
+
+    .transaction-callout p { margin-bottom: 0; color: #d2e5e7; line-height: 1.7; }
+    .transaction-callout h3 { font-size: 1.1rem; font-weight: 700; }
+    .database-note { color: var(--db-muted); font-size: .8rem; line-height: 1.6; }
+</style>
+
+<main class="database-page">
+    <section class="database-hero">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <span class="database-eyebrow">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+                    Dados e tecnologia
+                </span>
+                <h1 class="database-title mb-3">Uma base confiável para conectar farmácias e pessoas.</h1>
+                <p class="database-lead mb-4">
+                    O PointPharma organiza catálogos, estoque e pedidos em uma estrutura relacional preparada para manter as informações consistentes em cada etapa da compra.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-success btn-lg rounded-pill px-4" href="#estrutura">Conheça a estrutura</a>
+                    <a class="btn btn-outline-secondary btn-lg rounded-pill px-4" asp-controller="Home" asp-action="Privacy">Privacidade dos dados</a>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="database-architecture">
+                    <div class="architecture-caption mb-3">Fluxo de dados da plataforma</div>
+                    <div class="architecture-step">
+                        <span class="architecture-icon">
+                            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 18h6M10 6h4M8 10h8M8 14h8"/></svg>
+                        </span>
+                        <span><strong>Aplicativo PointPharma</strong><small>Consulta catálogo e envia pedidos</small></span>
+                    </div>
+                    <div class="architecture-arrow" aria-hidden="true">↓</div>
+                    <div class="architecture-step">
+                        <span class="architecture-icon">
+                            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16"/><circle cx="8" cy="5" r="1" fill="currentColor"/><circle cx="16" cy="12" r="1" fill="currentColor"/><circle cx="10" cy="19" r="1" fill="currentColor"/></svg>
+                        </span>
+                        <span><strong>API ASP.NET Core</strong><small>Valida regras e protege operações</small></span>
+                    </div>
+                    <div class="architecture-arrow" aria-hidden="true">↓</div>
+                    <div class="architecture-step">
+                        <span class="architecture-icon">
+                            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+                        </span>
+                        <span><strong>SQL Server · Point_Pharma</strong><small>Armazena os registros relacionados</small></span>
+                    </div>
+                    <p class="database-note mt-3 mb-0">O acesso ao banco é feito pelo backend; a aplicação cliente não recebe credenciais de conexão.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="estrutura" class="database-section">
+        <div class="database-section-label mb-2">Modelo de dados</div>
+        <div class="row align-items-end g-3 mb-4">
+            <div class="col-lg-8">
+                <h2 class="database-section-title h2 mb-2">Informação organizada por responsabilidade</h2>
+                <p class="database-section-copy mb-0">O Entity Framework Core mapeia os modelos do sistema para tabelas SQL Server e aplica relacionamentos por chaves, mantendo cada domínio claro e conectado.</p>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-sm-6 col-xl-3">
+                <article class="database-card">
+                    <span class="database-card-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M8 9h.01M12 9h.01M16 9h.01"/></svg>
+                    </span>
+                    <h3>Farmácias</h3>
+                    <p class="mb-0">Mantém identificação, endereço, contato, horário de funcionamento, CNPJ e e-mail de cada unidade.</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="database-card">
+                    <span class="database-card-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.5 7.7 7.5 4.4 7.5-4.4M12 12v9M8 5.3l8 4.6"/></svg>
+                    </span>
+                    <h3>Produtos e estoque</h3>
+                    <p class="mb-0">Relaciona cada produto à sua farmácia e registra categoria, descrição, preço e quantidade disponível.</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="database-card">
+                    <span class="database-card-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 3h14v18l-2-1.5L15 21l-3-1.5L9 21l-2-1.5L5 21V3Z"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+                    </span>
+                    <h3>Pedidos e itens</h3>
+                    <p class="mb-0">Guarda código único, data, situação, total e os itens comprados com quantidades e valores praticados.</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="database-card">
+                    <span class="database-card-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0M19 8h3M20.5 6.5v3"/></svg>
+                    </span>
+                    <h3>Contas e perfis</h3>
+                    <p class="mb-0">O Identity administra autenticação; o perfil complementa os dados e os pedidos podem ser vinculados à conta.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="database-section pt-5">
+        <div class="row g-4 align-items-stretch">
+            <div class="col-lg-6">
+                <div class="relationship-panel h-100">
+                    <div class="database-section-label mb-2">Integridade referencial</div>
+                    <h2 class="database-section-title h3 mb-3">Relacionamentos explícitos</h2>
+                    <div class="d-grid gap-2">
+                        <div class="relationship-item"><strong>Farmácia → Produtos</strong><span class="relationship-cardinality">1 para muitos</span></div>
+                        <div class="relationship-item"><strong>Pedido → Itens do pedido</strong><span class="relationship-cardinality">1 para muitos</span></div>
+                        <div class="relationship-item"><strong>Conta → Perfil</strong><span class="relationship-cardinality">1 para 1</span></div>
+                        <div class="relationship-item"><strong>Conta → Pedidos</strong><span class="relationship-cardinality">vínculo opcional</span></div>
+                    </div>
+                    <p class="database-note mt-3 mb-0">Os itens preservam nomes e preços usados na compra para que o histórico continue compreensível mesmo se o catálogo mudar.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="transaction-callout h-100 d-flex flex-column justify-content-center">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8de0b7" stroke-width="2" aria-hidden="true"><path d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.36-6.36-2.12 2.12M7.76 16.24l-2.12 2.12m12.72 0-2.12-2.12M7.76 7.76 5.64 5.64"/><circle cx="12" cy="12" r="4"/></svg>
+                        <span class="database-section-label" style="color:#8de0b7">Consistência no checkout</span>
+                    </div>
+                    <h3>Pedido e estoque são atualizados juntos.</h3>
+                    <p>Antes de confirmar, o backend recalcula os valores e verifica a disponibilidade. O pedido, seus itens e a baixa no estoque são gravados dentro de uma transação SQL serializável, reduzindo o risco de venda acima do saldo disponível.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <p class="database-note mt-4 mb-0">Esta página descreve a estrutura implementada no projeto Point_Pharma. Não exibe endereço do servidor, cadeia de conexão ou credenciais.</p>
+</main>
