@@ -60,7 +60,31 @@ namespace Point_Pharma.Controllers
             }
 
             await using var transaction = await _context.Database
-                .BeginTransactionAsync(IsolationLevel.Serializable);
+                .BeginTransactionAsync(IsolationLevel.ReadCommitted);
+
+            foreach (var item in itensSolicitados)
+            {
+                var linhasAtualizadas = await _context.Produtos
+                    .Where(p => p.Id == item.ProdutoId && p.QuantidadeEstoque >= item.Quantidade)
+                    .ExecuteUpdateAsync(atualizacao => atualizacao.SetProperty(
+                        p => p.QuantidadeEstoque,
+                        p => p.QuantidadeEstoque - item.Quantidade));
+
+                if (linhasAtualizadas != 1)
+                {
+                    var produtoAtual = await _context.Produtos
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(produto => produto.Id == item.ProdutoId);
+
+                    if (produtoAtual is null)
+                    {
+                        return BadRequest("Um ou mais produtos não foram encontrados.");
+                    }
+
+                    return Conflict(
+                        $"Estoque insuficiente para {produtoAtual.Nome}. Disponível: {produtoAtual.QuantidadeEstoque}.");
+                }
+            }
 
             var idsProdutos = itensSolicitados.Select(item => item.ProdutoId).ToList();
             var produtos = await _context.Produtos
@@ -76,25 +100,6 @@ namespace Point_Pharma.Controllers
             }
 
             var produtosPorId = produtos.ToDictionary(produto => produto.Id);
-            foreach (var item in itensSolicitados)
-            {
-                var produto = produtosPorId[item.ProdutoId];
-                if (produto.QuantidadeEstoque < item.Quantidade)
-                {
-                    return Conflict($"Estoque insuficiente para {produto.Nome}. Disponível: {produto.QuantidadeEstoque}.");
-                }
-
-                var linhasAtualizadas = await _context.Produtos
-                    .Where(p => p.Id == item.ProdutoId && p.QuantidadeEstoque >= item.Quantidade)
-                    .ExecuteUpdateAsync(atualizacao => atualizacao.SetProperty(
-                        p => p.QuantidadeEstoque,
-                        p => p.QuantidadeEstoque - item.Quantidade));
-
-                if (linhasAtualizadas != 1)
-                {
-                    return Conflict($"O estoque de {produto.Nome} mudou. Atualize o carrinho e tente novamente.");
-                }
-            }
 
             var pedido = new Pedido
             {

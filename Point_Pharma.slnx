@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="Point_Pharma.csproj" />
+  <Project Path="tests/PointPharma.IntegrationTests/PointPharma.IntegrationTests.csproj" />
 </Solution>

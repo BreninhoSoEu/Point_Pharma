@@ -30,6 +30,31 @@ namespace Point_Pharma.Dtos
         public DateOnly DataNascimento { get; set; }
     }
 
+    public class SolicitarRecuperacaoSenhaRequest
+    {
+        [Required]
+        [EmailAddress]
+        [StringLength(256)]
+        public string Email { get; set; } = string.Empty;
+    }
+
+    public class RedefinirSenhaRequest
+    {
+        [Required]
+        [EmailAddress]
+        [StringLength(256)]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(2048, MinimumLength = 16)]
+        public string Codigo { get; set; } = string.Empty;
+
+        [Required]
+        [MinLength(8)]
+        [RegularExpression("^(?=.*[A-Za-z])(?=.*\\d).{8,}$")]
+        public string NovaSenha { get; set; } = string.Empty;
+    }
+
     public class PerfilUsuarioResponse
     {
         public string Id { get; set; } = string.Empty;

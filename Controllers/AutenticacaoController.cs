@@ -1,11 +1,16 @@
 using System.Security.Claims;
+using System.Text;
+using System.Net.Sockets;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Point_Pharma.Data;
 using Point_Pharma.Dtos;
 using Point_Pharma.Models;
+using Point_Pharma.Services;
 
 namespace Point_Pharma.Controllers
 {
@@ -15,13 +20,19 @@ namespace Point_Pharma.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IdentityEmailSender _emailSender;
+        private readonly ILogger<AutenticacaoController> _logger;
 
         public AutenticacaoController(
             ApplicationDbContext context,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager,
+            IdentityEmailSender emailSender,
+            ILogger<AutenticacaoController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _emailSender = emailSender;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -68,6 +79,85 @@ namespace Point_Pharma.Controllers
             await transaction.CommitAsync();
 
             return Ok(new { message = "Conta criada com sucesso." });
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> SolicitarRecuperacaoSenha(SolicitarRecuperacaoSenhaRequest request)
+        {
+            if (!_emailSender.IsConfigured)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+                {
+                    message = "A recuperação de senha está temporariamente indisponível."
+                });
+            }
+
+            const string mensagemGenerica = "Se o e-mail estiver cadastrado, enviaremos um código de recuperação.";
+            var email = request.Email.Trim();
+            var usuario = await _userManager.FindByEmailAsync(email);
+            if (usuario is null)
+            {
+                return Ok(new { message = mensagemGenerica });
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(usuario);
+            var codigo = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+            try
+            {
+                await _emailSender.SendPasswordResetCodeAsync(usuario, email, codigo);
+            }
+            catch (Exception exception) when (
+                exception is SmtpCommandException
+                or SmtpProtocolException
+                or MailKit.ServiceNotConnectedException
+                or MailKit.ServiceNotAuthenticatedException
+                or IOException
+                or SocketException
+                or System.Security.Authentication.AuthenticationException
+                or OperationCanceledException
+                or TimeoutException)
+            {
+                _logger.LogError(exception, "Falha ao entregar um código de recuperação de senha.");
+            }
+
+            return Ok(new { message = mensagemGenerica });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> RedefinirSenha(RedefinirSenhaRequest request)
+        {
+            var usuario = await _userManager.FindByEmailAsync(request.Email.Trim());
+            if (usuario is null)
+            {
+                return BadRequest(new { message = "O código é inválido ou expirou. Solicite outro código." });
+            }
+
+            string token;
+            try
+            {
+                token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Codigo));
+            }
+            catch (FormatException)
+            {
+                return BadRequest(new { message = "O código é inválido ou expirou. Solicite outro código." });
+            }
+
+            var resultado = await _userManager.ResetPasswordAsync(usuario, token, request.NovaSenha);
+            if (!resultado.Succeeded)
+            {
+                var erros = resultado.Errors.Select(erro => erro.Code switch
+                {
+                    "PasswordTooShort" => "A senha precisa ter pelo menos 8 caracteres.",
+                    "PasswordRequiresDigit" => "A senha precisa conter pelo menos um número.",
+                    "PasswordMismatch" => "O código é inválido ou expirou. Solicite outro código.",
+                    _ => erro.Description
+                }).Distinct().ToArray();
+
+                return BadRequest(new { errors = erros });
+            }
+
+            return Ok(new { message = "Senha redefinida com sucesso. Entre com a nova senha." });
         }
 
         [Authorize]

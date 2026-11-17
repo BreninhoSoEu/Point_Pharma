@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Point_Pharma.Data;
 using Point_Pharma.Models;
+using Point_Pharma.Services;
 
 namespace Point_Pharma
 {
@@ -30,6 +31,12 @@ namespace Point_Pharma
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+                options.TokenLifespan = TimeSpan.FromMinutes(30));
+            builder.Services.AddSingleton<IEmailMessageTransport, GmailSmtpEmailTransport>();
+            builder.Services.AddTransient<IdentityEmailSender>();
+            builder.Services.AddTransient<IEmailSender<IdentityUser>>(services =>
+                services.GetRequiredService<IdentityEmailSender>());
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
             builder.Services.AddEndpointsApiExplorer();

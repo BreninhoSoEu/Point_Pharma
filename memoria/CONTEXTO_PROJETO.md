@@ -116,12 +116,11 @@ Implementação atual:
 - A migration `CriarSistemaPedidos` foi aplicada ao SQL Server em 04/11/2026.
 - O Expo envia somente IDs e quantidades; preço e estoque enviados pelo app não são usados para calcular a compra.
 
-Autenticação real e associação de pedidos existentes à conta permanecem pendentes. Smoke tests somente de validação foram executados: pedido inexistente retornou 404, produto inexistente 400 e estoque insuficiente 409. Não foi criada uma compra de teste nem alterada quantidade de estoque durante esses testes. Compra bem-sucedida, concorrência e rollback ainda precisam de testes integrados com dados controlados.
+Autenticação por ASP.NET Core Identity e Expo foi implementada. Em 17/11/2026, um teste integrado em banco SQL Server temporário validou cadastro, login, consulta e atualização de perfil, vínculo de pedido visitante, compra autenticada e presença dos dois pedidos no histórico da conta. O mesmo teste validou oito compras concorrentes pela última unidade (uma aceita e sete recusadas) e rollback de pedido/estoque após falha SQL forçada. O checkout usa atualização condicional de estoque e transação `ReadCommitted`, evitando deadlock por conversão de bloqueios de leitura em gravação. O banco temporário foi removido ao fim do teste; não foi aplicada migration ao banco de desenvolvimento.
+
+Recuperação de senha: existem as rotas `POST /api/auth/forgot-password` e `POST /api/auth/reset-password`, tela Expo e token com validade de 30 minutos. O transporte Gmail SMTP usa `smtp.gmail.com`, porta 587 com STARTTLS, e tem teste unitário da mensagem com transporte simulado. Ainda falta configurar a conta e a senha de app; nesse estado, o endpoint de solicitação responde 503 e nenhum e-mail real é enviado. Configurações esperadas: `Email:SmtpUser`, `Email:SmtpAppPassword` e, opcionalmente, `Email:FromName`, guardadas em User Secrets ou variáveis de ambiente.
+
+Política de privacidade: o contato informado é Breno Rafael Rodrigues / Point Pharma, `tectenico@gmail.com`, com prazo de resposta informado de até 2 dias úteis. O prazo de retenção das contas e dos pedidos ainda não foi definido e deve ser aprovado antes de publicar o sistema.
 
 ## 11. Primeira tarefa recomendada ao Codex
-Faça somente uma análise, sem editar:
-- Inventarie a solução, projetos `.csproj` e estrutura.
-- Leia `Program.cs`, `appsettings.json` sem revelar segredos, DbContext, Models e Controllers.
-- Identifique se há MVC com Views, Web API ou ambos.
-- Identifique migrations existentes e descreva o estado aparente do projeto sem alterar o banco.
-- Compare o código com este documento e reporte divergências.
+Próximas decisões antes da publicação: configurar credenciais Gmail SMTP fora do repositório e validar entrega; definir prazo de retenção e procedimento de exclusão de conta; validar a política com o responsável; executar revisão visual em aparelhos reais.
